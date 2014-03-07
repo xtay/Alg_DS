@@ -2,9 +2,9 @@ CC=gcc
 LIB=
 CFLAG=-O1 -I ./include
 
-ALG_DIR=./alg
-TOOL_DIR=./tool
-INCLUDE_DIR=./include
+ALG_DIR=alg
+TOOL_DIR=tool
+INCLUDE_DIR=include
 BUILD_DIR=build
 RESULT_DIR=.
 
@@ -12,51 +12,36 @@ NAME=main
 
 RESULT=$(RESULT_DIR)/$(NAME)
 
-HEADERS=\
-		$(INCLUDE_DIR)/common.h\
-		$(INCLUDE_DIR)/seqList.h\
-		$(INCLUDE_DIR)/seqList_plus.h\
-		$(INCLUDE_DIR)/linkList.h\
-		$(INCLUDE_DIR)/linkList_plus.h\
+#get all of the header files
+HEADERS = $(shell find $(INCLUDE_DIR) -name '*.h')
 
-OBJS=\
-	 $(BUILD_DIR)/main.o\
-	 $(BUILD_DIR)/seqList.o\
-	 $(BUILD_DIR)/seqList_plus.o\
-	 $(BUILD_DIR)/linkList.o\
-	 $(BUILD_DIR)/linkList_plus.o\
-	 $(BUILD_DIR)/common.o\
+#the name of C file should be preserved, so that this line could guess all the object files that will be generated during the compilation.
+OBJS = $(shell find $(ALG_DIR) $(TOOL_DIR) -name '*.c' | cut -d '/' -f 2 | sed -e "s/.c$$/.o/g" | sed -s "s/^/$(BUILD_DIR)\//g" )
 
+OBJS += $(BUILD_DIR)/main.o
 
 ###########################################################
 #Build rules
 all: dir $(RESULT)
 
 dir:
-	 mkdir -p $(BUILD_DIR) 
+	@if [ ! -d $(BUILD_DIR) ]; then\
+		 mkdir -p $(BUILD_DIR);\
+	 fi
 
-$(RESULT): $(OBJS)
+$(RESULT): makeAlg makeTool $(OBJS)
 	$(CC) $(CFLAG) $(OBJS) -o $(RESULT)
 
 clean:
-	rm -f $(OBJS) $(RESULT)
-	rm -r $(BUILD_DIR)
+	rm -rf $(BUILD_DIR)
+	rm -f $(RESULT)
 
 ###########################################################
 $(BUILD_DIR)/main.o: main.c $(HEADERS)
 	$(CC) $(CFLAG) -c $< -o $@
 
-$(BUILD_DIR)/seqList_plus.o: $(TOOL_DIR)/seqList_plus.c $(HEADERS)
-	$(CC) $(CFLAG) -c $< -o $@
+makeAlg:
+	$(MAKE) -C $(ALG_DIR)
 
-$(BUILD_DIR)/seqList.o: $(ALG_DIR)/seqList.c $(HEADERS)
-	$(CC) $(CFLAG) -c $< -o $@
-
-$(BUILD_DIR)/linkList_plus.o: $(TOOL_DIR)/linkList_plus.c $(HEADERS)
-	$(CC) $(CFLAG) -c $< -o $@
-
-$(BUILD_DIR)/linkList.o: $(ALG_DIR)/linkList.c $(HEADERS)
-	$(CC) $(CFLAG) -c $< -o $@
-
-$(BUILD_DIR)/common.o: $(TOOL_DIR)/common.c $(HEADERS)
-	$(CC) $(CFLAG) -c $< -o $@
+makeTool:
+	$(MAKE) -C $(TOOL_DIR)

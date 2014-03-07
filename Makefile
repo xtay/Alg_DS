@@ -29,12 +29,13 @@ dir:
 		 mkdir -p $(BUILD_DIR);\
 	 fi
 
-$(RESULT): makeAlg makeTool $(OBJS)
+$(RESULT): .algStamp .toolStamp makeAlg makeTool $(OBJS)
 	$(CC) $(CFLAG) $(OBJS) -o $(RESULT)
 
 clean:
 	rm -rf $(BUILD_DIR)
 	rm -f $(RESULT)
+	rm -f .algStamp .toolStamp
 
 ###########################################################
 $(BUILD_DIR)/main.o: main.c $(HEADERS)
@@ -45,3 +46,15 @@ makeAlg:
 
 makeTool:
 	$(MAKE) -C $(TOOL_DIR)
+
+.algStamp: $(ALG_DIR)
+	cd $(ALG_DIR) \
+	. genMake.sh  \
+	cd ..
+	touch .algStamp
+
+.toolStamp: $(TOOL_DIR)
+	cd $(TOOL_DIR) \
+	. genMake.sh  \
+	cd ..
+	touch .toolStamp

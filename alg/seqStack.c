@@ -116,9 +116,9 @@ element_t pop_seqStack(
 #endif
 
     if( LIST_INIT_SIZE < pStack->size &&
-            seqStack_length(pStack) < pStack->size / SHRINK_FACTOR ){
+            seqStack_length(pStack) <= pStack->size / SHRINK_FACTOR ){
         pStack->base = shrink_memory( pStack->base, pStack->size );
-        pStack->top = pStack->base + pStack->size/SHRINK_FACTOR - 1;// bug #1
+        pStack->top = pStack->base + pStack->size/SHRINK_FACTOR-1;// bug #1
         pStack->size /= EXPAND_FACTOR;
     }
 

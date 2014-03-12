@@ -14,7 +14,7 @@ void init_seqList(
 
         seqList_t *pList )
 {
-    pList->aElem = (element_t *) malloc(LIST_INIT_SIZE * sizeof(element_t));
+    pList->aElem = (element_t *)malloc(LIST_INIT_SIZE * sizeof(element_t));
 
     if( pList->aElem == NULL ){
         raise(ERROR, "failed to allocate memory when initialize seqlist\n");
@@ -53,6 +53,45 @@ void clear_seqList(
     return;
 }
 
+element_t *expand_memory(
+        element_t   *aElem,
+        int         curSize )
+{
+    element_t *result;
+    result = (element_t*) malloc( EXPAND_FACTOR * curSize * sizeof(element_t) );
+
+    if( aElem == NULL ){
+        raise(ERROR, "failed to allocate memory when insert new element\n");
+        return NULL;
+    } 
+
+    //bug #2, fixed
+    memcpy(result, aElem, curSize * sizeof(element_t));
+
+    free(aElem);
+
+    return result;
+}
+
+element_t *shrink_memory(
+        element_t   *aElem,
+        int         curSize )
+{
+    element_t *result;
+    result = (element_t*) malloc( curSize / EXPAND_FACTOR * sizeof(element_t) );
+
+    if( aElem == NULL ){
+        raise(ERROR, "failed to allocate memory when delete an element\n");
+        return NULL;
+    } 
+
+    //bug #2, fixed
+    memcpy(result, aElem, curSize / SHRINK_FACTOR * sizeof(element_t));
+
+    free(aElem);
+
+    return result;
+}
 
 void insert_seqList_elem( 
 
@@ -81,20 +120,7 @@ void insert_seqList_elem(
     element_t *pOldElems = NULL;
 
     if( pList->length == pList->size ){
-
-        pOldElems = pList->aElem;
-        pList->aElem = (element_t*) malloc( EXPAND_FACTOR * pList->size * sizeof(element_t) );
-        if( pList->aElem == NULL ){
-            raise(ERROR, "failed to allocate memory when insert new element\n");
-            return;
-        } 
-
-        //bug #2, fixed
-        memcpy(pList->aElem, pOldElems, pList->length * sizeof(element_t));
-
-        free(pOldElems);
-        pOldElems = NULL;
-
+        pList->aElem = expand_memory( pList->aElem, pList->size );
         pList->size *= EXPAND_FACTOR;
     }
 
@@ -142,20 +168,7 @@ element_t delete_seqList_elem(
     element_t *pOldElems = NULL;
 
     if( pList->length <= pList->size / SHRINK_FACTOR ){
-
-        pOldElems = pList->aElem;
-        pList->aElem = (element_t*) malloc( pList->size / EXPAND_FACTOR * sizeof(element_t) );
-        if( pList->aElem == NULL ){
-            raise(ERROR, "failed to allocate memory when insert new element\n");
-            return result;
-        } 
-
-        //bug #2, fixed, the 3rd arg of memcpy is in bytes...
-        memcpy(pList->aElem, pOldElems, pList->length * sizeof(element_t));
-
-        free(pOldElems);
-        pOldElems = NULL;
-
+        pList->aElem = shrink_memory( pList->aElem, pList->size );
         pList->size /= EXPAND_FACTOR;
     }
 

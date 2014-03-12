@@ -1,7 +1,8 @@
-echo 'CC=gcc' > Makefile
-echo 'CFLAGS=-O1 -I ../include' >> Makefile
+#!/bin/bash
+#echo 'CC=gcc' > Makefile
+#echo 'CFLAG=-O1 -I ../include' >> Makefile
 
-echo '' >> Makefile
+echo '' > Makefile
 echo 'all: \' >> Makefile
 for file in `ls *.c`
 do
@@ -16,6 +17,6 @@ for file in `ls *.c`
 do
     name=`echo ${file} | cut -d '.' -f 1`
     gcc -MM -I ../include ${file} | sed -e "s/^${name}.o/..\/build\/${name}.o/g" >> Makefile
-    echo -e "\t\$(CC) \$(CFLAGS) -c \$< -o \$@" >> Makefile
+    echo -e "\t\$(CC) \$(CFLAG) -I ../include -c \$< -o \$@" >> Makefile
     echo "" >> Makefile
 done

@@ -15,7 +15,7 @@ void test_seqList()
     traverse_seqList( list );
     check_status("");
     
-    for( i = 0; i < 84; i++ ){
+    for( i = 0; i < 85; i++ ){
         elem = delete_seqList_elem( &list, list.length-1 );
     }
 

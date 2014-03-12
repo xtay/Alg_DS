@@ -39,6 +39,14 @@ void destroy_seqList(
 void clear_seqList( 
         seqList_t   *pList ); 
 
+element_t *expand_memory(
+        element_t   *aElem,
+        int         curSize );
+
+element_t *shrink_memory(
+        element_t   *aElem,
+        int         curSize );
+
 void insert_seqList_elem( 
         seqList_t   *pList, 
         int         index, 

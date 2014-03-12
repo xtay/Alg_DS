@@ -1,6 +1,8 @@
 CC=gcc
+CFLAG=-O1
+export CC
+export CFLAG
 LIB=
-CFLAG=-O1 -I ./include
 
 ALG_DIR=alg
 TOOL_DIR=tool
@@ -29,8 +31,9 @@ dir:
 		 mkdir -p $(BUILD_DIR);\
 	 fi
 
+#details of the $< will be explained later
 $(RESULT): .algStamp .toolStamp makeAlg makeTool $(OBJS)
-	$(CC) $(CFLAG) $(OBJS) -o $(RESULT)
+	$(CC) $(CFLAG) -I $(INCLUDE_DIR) $(OBJS) -o $(RESULT)
 
 clean:
 	rm -rf $(BUILD_DIR)
@@ -39,22 +42,26 @@ clean:
 
 ###########################################################
 $(BUILD_DIR)/main.o: main.c $(HEADERS)
-	$(CC) $(CFLAG) -c $< -o $@
+	$(CC) $(CFLAG) -I $(INCLUDE_DIR) -c $< -o $@
 
+#excute Makefile in the alg dir
 makeAlg:
 	$(MAKE) -C $(ALG_DIR)
 
+#excute Makefile in the tool dir
 makeTool:
 	$(MAKE) -C $(TOOL_DIR)
 
+#create or recreate the Makefile while new files added into the alg dir
 .algStamp: $(ALG_DIR)
-	cd $(ALG_DIR) \
-	. genMake.sh  \
-	cd ..
+	cd $(ALG_DIR); \
+	bash genMake.sh;  \
+	cd ..;
 	touch .algStamp
 
+#create or recreate the Makefile while new files added into the tool dir
 .toolStamp: $(TOOL_DIR)
-	cd $(TOOL_DIR) \
-	. genMake.sh  \
-	cd ..
+	cd $(TOOL_DIR); \
+	bash genMake.sh;  \
+	cd ..;
 	touch .toolStamp

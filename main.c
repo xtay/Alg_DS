@@ -7,8 +7,8 @@
 
 int main(int argc, char *argv[])
 {
-    test_seqList();
-    test_linkList();
+    //test_seqList();
+    //test_linkList();
     test_seqStack();
     return 0;
 }

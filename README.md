@@ -1,6 +1,9 @@
 Alg_DS
 ======
 
+I realized that many codes in C is not easily reuseable...
+so I made up my mind to recode all of these stuffs in C++...
+
 Algorithm and data structures in C
 
 ###In general###
